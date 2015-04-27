@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
+	gitlab "github.com/bugagazavr/go-gitlab-client"
 )
 
 // MetaStore implements a metadata storage. It stores user credentials and Meta information
@@ -232,8 +233,8 @@ func (s *MetaStore) authenticate(authorization string) bool {
 	}
 	user, password := cs[:i], cs[i+1:]
 
+/*
 	value := ""
-
 	s.db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(usersBucket)
 		if bucket == nil {
@@ -247,6 +248,15 @@ func (s *MetaStore) authenticate(authorization string) bool {
 	if value != "" && value == password {
 		return true
 	}
+*/
+
+	gitlab := gitlab.NewGitlab("https://code.iti.illinois.edu", "/gitlab/api/v3", "")
+	session, err := gitlab.GetSession(user, password)
+	_ = session
+	if err != nil {
+		return true
+	}
+
 	return false
 }
 
